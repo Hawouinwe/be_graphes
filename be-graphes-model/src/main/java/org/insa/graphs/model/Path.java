@@ -195,11 +195,14 @@ public class Path {
      * Compute the length of this path (in meters).
      *
      * @return Total length of the path (in meters).
-     * @deprecated Need to be implemented.
+     * //@deprecated Need to be implemented.
      */
     public float getLength() {
-        // TODO:
-        return 0;
+        float r = 0;
+        for(Arc a : this.getArcs()) {
+            r += a.getLength();
+        }
+        return r;
     }
 
     /**
@@ -208,11 +211,14 @@ public class Path {
      * @param speed Speed to compute the travel time.
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
-     * @deprecated Need to be implemented.
+     * //@deprecated Need to be implemented.
      */
     public double getTravelTime(double speed) {
-        // TODO:
-        return 0;
+        double r = 0;
+        for(Arc a : this.getArcs()) {
+            r += a.getTravelTime(speed);
+        }
+        return r;
     }
 
     /**
