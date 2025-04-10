@@ -1,6 +1,7 @@
 package org.insa.graphs.algorithm.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Implements a binary heap containing elements of type E. Note that all comparisons are
@@ -17,12 +18,15 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     // The heap array.
     protected final ArrayList<E> array;
 
+    private HashMap<E, Integer> dico; 
+
     /**
      * Construct a new empty binary heap.
      */
     public BinaryHeap() {
         this.currentSize = 0;
         this.array = new ArrayList<E>();
+        this.dico = new HashMap<E, Integer>();
     }
 
     /**
@@ -33,6 +37,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     public BinaryHeap(BinaryHeap<E> heap) {
         this.currentSize = heap.currentSize;
         this.array = new ArrayList<E>(heap.array);
+        this.dico = heap.dico;
     }
 
     /**
@@ -48,6 +53,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         else {
             this.array.set(index, value);
         }
+        this.dico.put(value, index);
     }
 
     /**
@@ -134,7 +140,26 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
     @Override
     public void remove(E x) throws ElementNotFoundException {
-        // TODO:
+        
+        int index_last = this.array.size() - 1;
+        int index = this.dico.get(x);
+        if(index == index_last) {
+            this.currentSize --;
+        }
+        else {
+
+            //dernier element
+            E last = this.array.get(index_last);
+
+            // Mettre dernier sommet v à la place de x
+            this.arraySet(index, last);
+            this.currentSize --;
+            //this.arraySet(this.array.size() - 1, null);
+
+            percolateUp(index);
+            percolateDown(index);
+        }
+
     }
 
     @Override
@@ -150,6 +175,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         E lastItem = this.array.get(--this.currentSize);
         this.arraySet(0, lastItem);
         this.percolateDown(0);
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         return minItem;
     }
 
