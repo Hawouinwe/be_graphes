@@ -1,15 +1,18 @@
+package org.insa.graphs.algorithm.shortestpath;
+import  org.insa.graphs.model.Node;
+
 public class Label{
 
-    private Node sommetCourant;
-    private boolean marque;
-    private int coutRealise;
-    private Node pere;
+    protected Node sommetCourant;
+    protected boolean marque;
+    protected int coutRealise;
+    protected Node pere;
 
     public Label(Node sommetCourant, boolean marque, int coutRealise, Node pere) {
         this.sommetCourant = sommetCourant;
         this.marque = marque;
         this.coutRealise = coutRealise;
-        this. pere = pere;
+        this.pere = pere;
     }
 
     public Node getSommet() {
@@ -24,7 +27,7 @@ public class Label{
         return this.coutRealise;
     }
 
-    public getPere() {
+    public Node getPere() {
         return this.pere;
     }
 }

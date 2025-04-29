@@ -1,5 +1,11 @@
 package org.insa.graphs.algorithm.shortestpath;
 
+
+import java.util.Arrays;
+
+import  org.insa.graphs.model.Graph;
+
+
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
     public DijkstraAlgorithm(ShortestPathData data) {
@@ -16,7 +22,28 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         // variable that will contain the solution of the shortest path problem
         ShortestPathSolution solution = null;
 
-        // TODO: implement the Dijkstra algorithm
+        // TODO: implement the Dijkstra algorithm ---------------------------------------
+        Graph graph = data.getGraph();
+        final int nbNodes = graph.size();
+
+        // Initialize array of distances.
+        double[] distances = new double[nbNodes];
+        Arrays.fill(distances, Double.POSITIVE_INFINITY);
+        distances[data.getOrigin().getId()] = 0;
+
+        
+        // suite ... !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
+
+
+
 
         // when the algorithm terminates, return the solution that has been found
         return solution;
