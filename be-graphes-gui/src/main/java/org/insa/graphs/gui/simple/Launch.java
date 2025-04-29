@@ -68,7 +68,7 @@ public class Launch {
 
         // create a path reader
         try (final PathReader pathReader = new BinaryPathReader(new DataInputStream(
-            new BufferedInputStream(new FileInputStream(pathName))))) {
+                new BufferedInputStream(new FileInputStream(pathName))))) {
 
             // read the path
             path = pathReader.readPath(graph);
