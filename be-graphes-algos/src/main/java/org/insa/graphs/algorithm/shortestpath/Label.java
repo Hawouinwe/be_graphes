@@ -1,18 +1,19 @@
 package org.insa.graphs.algorithm.shortestpath;
+import  org.insa.graphs.model.Arc;
 import  org.insa.graphs.model.Node;
 
-public class Label{
+public class Label implements Comparable<Label>{
 
     protected Node sommetCourant;
     protected boolean marque;
-    protected int coutRealise;
-    protected Node pere;
+    protected double coutRealise;
+    protected Arc arcEntrant;
 
-    public Label(Node sommetCourant, boolean marque, int coutRealise, Node pere) {
+    public Label(Node sommetCourant, boolean marque, double coutRealise, Arc arcEntrant) {
         this.sommetCourant = sommetCourant;
         this.marque = marque;
         this.coutRealise = coutRealise;
-        this.pere = pere;
+        this.arcEntrant = arcEntrant;
     }
 
     public Node getSommet() {
@@ -23,11 +24,41 @@ public class Label{
         return this.marque;
     }
 
-    public int getCost() {
+    public double getCost() {
         return this.coutRealise;
     }
 
-    public Node getPere() {
-        return this.pere;
+    public void setCost(double nvCout) {
+        this.coutRealise = nvCout;
     }
+
+    public Arc getArcEntrant() {
+        return this.arcEntrant;
+    }
+
+    public void setArcEntrant(Arc nvArc) {
+        this.arcEntrant = nvArc;
+    }
+
+    public boolean checkMarque() {
+        return this.marque == true;
+    }
+
+    public void setMarque() {
+        this.marque = true;
+    }
+
+    @Override
+    public int compareTo(Label autre) {
+        if (this.getCost() == autre.getCost()) {
+            return 0;
+        }
+        else if (this.getCost() > autre.getCost()) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
+
 }
