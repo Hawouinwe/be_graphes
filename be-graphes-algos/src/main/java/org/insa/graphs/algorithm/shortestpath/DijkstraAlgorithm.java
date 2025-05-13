@@ -20,23 +20,21 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     @Override
     protected ShortestPathSolution doRun() {
 
-        // retrieve data from the input problem (getInputData() is inherited from the
-        // parent class ShortestPathAlgorithm)
+        // Retrieve data from the input problem (getInputData() is inherited from the
+        // Parent class ShortestPathAlgorithm)
         final ShortestPathData data = getInputData();
 
-        // variable that will contain the solution of the shortest path problem
+        // Variable that will contain the solution of the shortest path problem
         ShortestPathSolution solution = null;
 
-        // TODO: implement the Dijkstra algorithm ---------------------------------------
         Graph graph = data.getGraph();
         final int nbNodes = graph.size();
 
         // Notify observers about the first event (origin processed).
-        notifyOriginProcessed(data.getOrigin());
+        this.notifyOriginProcessed(data.getOrigin());
 
         // Initilaize Priority Queue, Binary Heap
         BinaryHeap<Label> filePrio = new BinaryHeap<Label>();
-        
 
         // Initialize Labels
         Label[] listeLabel = new Label[nbNodes];
@@ -46,73 +44,69 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         }
 
         filePrio.insert(listeLabel[data.getOrigin().getId()]);
-
         listeLabel[data.getOrigin().getId()].setCost(0);
 
-        // Algorithm
+        // Dijkstra core algorithm
         while(!filePrio.isEmpty()) {
             Label labCour = filePrio.findMin();
-            
-            //System.out.println("Marque ? " + labCour.getMarque());
 
             if(labCour.checkMarque()) {
                 filePrio.remove(labCour);
                 continue;
             }
 
-            //System.out.println("iciA");
+            // Checks if the destination has been reached, stopping the algorithm then
+            if(listeLabel[data.getDestination().getId()].checkMarque()) {
+                break;
+            }
 
+
+            // Visits successors of the current node
             if(labCour.sommetCourant.hasSuccessors()) {
-
-                //System.out.println("iciB");
 
                 for (Arc arc : labCour.sommetCourant.getSuccessors()) {
 
-                    //System.out.println("iciC");
-
+                    // checks the validity of the arc
                     if (!data.isAllowed(arc)) {
                         continue;
                     }
 
                     Label dest = listeLabel[arc.getDestination().getId()];
-                    //System.out.println("Son cout " + dest.getCost());
-                    //System.out.println("Contre cout "+ labCour.getCost() + data.getCost(arc));
 
+                    // If the path to visited node is shorter, updates it
                     if(dest.getCost() > labCour.getCost() + data.getCost(arc)) {
-                        //System.out.println("Oui if");
+                        this.notifyNodeReached(dest.getSommet());
                         dest.setCost(labCour.getCost() + data.getCost(arc));
-                        //System.out.println("On a set Cost");
                         dest.setArcEntrant(arc);
-                        //System.out.println("On a set Arc");
-                        //System.out.println("Arc :"+arc+"\n");
                         if(!dest.checkMarque()) {
-                            //System.out.println("Il est pas marque");
                             filePrio.insert(dest);
-                            //System.out.println("On l'a mis dans la file prio");
                         }
                     }
                 }
             }
+            
+            // Marks the current node, so as not to visit it again
             labCour.setMarque();
+            this.notifyNodeMarked(labCour.getSommet());
             filePrio.remove(labCour);
         }
 
-        //Constructing the solution
+        // Constructing the solution
         ArrayList<Arc> arcs = new ArrayList<>();
 
+        // If the destination was not reached, returns as an infeasible solution
         Label l = listeLabel[data.getDestination().getId()];
+        if(!l.checkMarque()) {
+            solution = new ShortestPathSolution(data, Status.INFEASIBLE);
+            return solution;
+        }
+        else {
+            this.notifyDestinationReached(l.getSommet());
+        }
 
-        //System.out.println("Label " + l);
-        //System.out.println("ID dest "+l.getSommet().getId());
-
-        //System.out.println("Arc entrant" + l.getArcEntrant());
-        //System.out.println("ID dest bis" + l.getArcEntrant().getDestination().getId());
-        
-        
-        
+        // Constructs the path returned by the function
         while (l.getArcEntrant().getOrigin().getId() != data.getOrigin().getId() ) {
             arcs.add(l.getArcEntrant());
-            //System.out.println("On ajoute l'arc " + l.getSommet().getId());
             l = listeLabel[l.getArcEntrant().getOrigin().getId()];
         }
 
@@ -124,7 +118,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         solution = new ShortestPathSolution(data, Status.OPTIMAL,
                     new Path(graph, arcs));
 
-        // when the algorithm terminates, return the solution that has been found
+        // When the algorithm terminates, returns the solution that has been found
         return solution;
     }
 
