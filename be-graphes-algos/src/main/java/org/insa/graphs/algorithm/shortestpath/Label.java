@@ -28,6 +28,11 @@ public class Label implements Comparable<Label>{
         return this.coutRealise;
     }
 
+
+    public double getTotalCost() {
+        return this.getCost();
+    }
+
     public void setCost(double nvCout) {
         this.coutRealise = nvCout;
     }
@@ -50,10 +55,10 @@ public class Label implements Comparable<Label>{
 
     @Override
     public int compareTo(Label autre) {
-        if (this.getCost() == autre.getCost()) {
+        if (this.getTotalCost() == autre.getTotalCost()) {
             return 0;
         }
-        else if (this.getCost() > autre.getCost()) {
+        else if (this.getTotalCost() > autre.getTotalCost()) {
             return 1;
         }
         else {

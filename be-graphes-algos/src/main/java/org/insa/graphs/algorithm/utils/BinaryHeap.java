@@ -54,6 +54,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
             this.array.set(index, value);
         }
         this.dico.put(value, index);
+        //System.out.println("Il exite bien ici : " + this.exists(value));  ////
     }
 
     /**
@@ -143,17 +144,17 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     public void remove(E x) throws ElementNotFoundException {
 
         if(this.currentSize == 0) {
-            //throw new ElementNotFoundException(x);
+            throw new ElementNotFoundException(x);
         }
 
-        if(!(this.dico.containsKey(x))) {
-            //throw new ElementNotFoundException(x);
+        if(!(this.exists(x))) {
+            throw new ElementNotFoundException(x);
         }
 
         int index = this.dico.get(x);
         
         if (!(index >= 0 && index < this.currentSize)) {
-            //throw new ElementNotFoundException(x);
+            throw new ElementNotFoundException(x);
         }
 
         int index_last = this.currentSize - 1;
@@ -197,6 +198,24 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         this.dico.remove(minItem);
       
         return minItem;
+    }
+
+    public boolean hardExists(E x){
+        for (int i = 0; i < this.currentSize; i++) {
+            if(this.array.get(i).equals(x)){
+                return true;
+            }  
+        }
+        return false;
+    }
+
+    public boolean exists(E x) {
+        return this.dico.containsKey(x);
+        /*
+        if(this.dico.get(x) <= this.currentSize && this.dico.get(x) > 0) {
+            return true;
+        }
+        */
     }
 
     /**
