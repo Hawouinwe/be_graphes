@@ -54,7 +54,7 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
             }
         }
 
-        System.out.println("mode : " + data.getMode());
+        // System.out.println("mode : " + data.getMode());
 
         filePrio.insert(listeLabel[data.getOrigin().getId()]);
         listeLabel[data.getOrigin().getId()].setCost(0);

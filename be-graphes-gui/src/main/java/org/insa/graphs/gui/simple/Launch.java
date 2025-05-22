@@ -14,6 +14,7 @@ import javax.swing.SwingUtilities;
 import org.insa.graphs.algorithm.AbstractSolution.Status;
 import org.insa.graphs.algorithm.ArcInspector;
 import org.insa.graphs.algorithm.ArcInspectorFactory;
+import org.insa.graphs.algorithm.shortestpath.AStarAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.DijkstraAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathSolution;
@@ -46,73 +47,6 @@ public class Launch {
             }
         });
         return basicDrawing;
-    }
-
-    // public static void main(String[] args) throws Exception {
-
-    //     // visit these directory to see the list of available files on commetud.
-    //     final String mapName =
-    //             "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
-    //     final String pathName =
-    //             "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
-
-    //     final Graph graph;
-    //     final Path path;
-
-    //     // create a graph reader
-    //     try (final GraphReader reader = new BinaryGraphReader(new DataInputStream(
-    //             new BufferedInputStream(new FileInputStream(mapName))))) {
-    //         graph = reader.read();
-    //     }
-
-    //     // create the drawing
-    //     final Drawing drawing = createDrawing();
-
-    //     // draw the graph on the drawing
-    //     drawing.drawGraph(graph);
-
-    //     // create a path reader
-    //     try (final PathReader pathReader = new BinaryPathReader(new DataInputStream(
-    //             new BufferedInputStream(new FileInputStream(pathName))))) {
-
-    //         // read the path
-    //         path = pathReader.readPath(graph);
-    //     }
-
-    //     // draw the path on the drawing
-    //     drawing.drawPath(path);
-    // }
-
-
-    private void carreSansFiltres() throws Exception {
-        // visit these directory to see the list of available files on commetud.
-        final String mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/carre.mapgr";
-
-        final Graph graph;
-        // create a graph reader
-        try (final GraphReader reader = new BinaryGraphReader(new DataInputStream(
-                new BufferedInputStream(new FileInputStream(mapName))))) {
-            graph = reader.read();
-        }
-
-        List<ArcInspector> filtres = ArcInspectorFactory.getAllFilters();
-        ShortestPathData data = new ShortestPathData(graph, graph.get(7), graph.get(0), filtres.get(0));
-        
-        DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(data);
-
-        ShortestPathSolution solutionPath = dijkstra.run();
-        
-        if (solutionPath.getStatus().equals(Status.INFEASIBLE)) {
-            System.out.println("Il n'a pas trouvé de chemin !");
-            return;
-        }
-
-        // create the drawing
-        final Drawing drawing = createDrawing();
-        // draw the graph on the drawing
-        drawing.drawGraph(graph);
-        // draw the path on the drawing
-        drawing.drawPath(solutionPath.getPath());
     }
 
     private void matabiauTourEiffelVoiture() throws Exception {
@@ -195,13 +129,63 @@ public class Launch {
     //     ShortestPathSolution solutionPath = dijkstra.run();
     // }
 
+    private void runAlgo(String algoName, String mapName, ArcInspector filter, int idOrigin, int idDestination) throws Exception {
+        final Graph graph;
+        // create a graph reader
+        try (final GraphReader reader = new BinaryGraphReader(new DataInputStream(
+                new BufferedInputStream(new FileInputStream(mapName))))) {
+            graph = reader.read();
+        }
+
+        ShortestPathData data = new ShortestPathData(graph, graph.get(idOrigin), graph.get(idDestination), filter);
+        ShortestPathSolution solutionPath = null;
+
+        if (algoName.toLowerCase().equals("d")) {
+            DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(data);
+            solutionPath = dijkstra.run();
+        } else if (algoName.toLowerCase().equals("a")) {
+            AStarAlgorithm astar = new AStarAlgorithm(data);
+            solutionPath = astar.run();
+        } else {
+            System.out.println("Tu n'as pas choisis un algo disponible, il faut choisir entre d (Dijskra) et a (Astar)");
+            return;
+        }
+
+        
+        
+        System.out.println(solutionPath);
+        if (solutionPath.getStatus().equals(Status.INFEASIBLE)) {
+            // System.out.println("L'algorithme n'a pas trouvé de chemin !");
+            return;
+        }
+        // create the drawing
+        final Drawing drawing = createDrawing();
+        // draw the graph on the drawing
+        drawing.drawGraph(graph);
+        // draw the path on the drawing
+        drawing.drawPath(solutionPath.getPath());
+    }
+
     public static void main(String[] args) throws Exception {
         Launch launch = new Launch();
+        List<ArcInspector> filtres = ArcInspectorFactory.getAllFilters();
         try {
-            launch.carreSansFiltres();
-            launch.matabiauTourEiffelVoiture(); // ne marche pas car la tour eiffel est piéton uniquement.
-            launch.hippodromeToulousePlagePieton();
+            // Dijkstra
+            // Carre sans filtres
+            launch.runAlgo("D", "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/carre.mapgr", filtres.get(0), 7, 0);
+            // Matabiau jusqu'à la Tour Eiffel en voiture
+            // launch.runAlgo("D", "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/france.mapgr", filtres.get(1), 36535, 154554);
+            // Hippodrome vers Toulouse Plage à pied
+            launch.runAlgo("D", "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr", filtres.get(3), 6471, 18274);
             // launch.testPathValue();
+            
+            // Astar
+            // Carre sans filtres
+            launch.runAlgo("A", "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/carre.mapgr", filtres.get(0), 7, 0);
+            // Matabiau jusqu'à la Tour Eiffel en voiture
+            // launch.runAlgo("A", "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/france.mapgr", filtres.get(1), 36535, 154554);
+            // Hippodrome vers Toulouse Plage à pied
+            launch.runAlgo("A", "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr", filtres.get(3), 6471, 18274);
         } catch (Exception e) {
             System.out.println("Il y a eu une erreur lors des différents tests: " + e);
             e.printStackTrace();
