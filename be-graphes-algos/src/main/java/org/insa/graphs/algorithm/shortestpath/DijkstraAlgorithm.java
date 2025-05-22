@@ -88,6 +88,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             // Marks the current node, so as not to visit it again
             labCour.setMarque();
             this.notifyNodeMarked(labCour.getSommet());
+            // System.out.println("Voici le cout de cour: " + labCour.getCost());
             filePrio.remove(labCour);
         }
 
@@ -117,6 +118,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
         solution = new ShortestPathSolution(data, Status.OPTIMAL,
                     new Path(graph, arcs));
+
+        // System.out.println("Résultat de path: " + solution.getPath().getLength());
 
         // When the algorithm terminates, returns the solution that has been found
         return solution;
