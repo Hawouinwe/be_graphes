@@ -5,10 +5,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.insa.graphs.algorithm.AbstractInputData.Mode;
-import org.insa.graphs.model.Arc;
-import org.insa.graphs.model.GraphStatistics;
 import org.insa.graphs.model.AccessRestrictions.AccessMode;
 import org.insa.graphs.model.AccessRestrictions.AccessRestriction;
+import org.insa.graphs.model.Arc;
+import org.insa.graphs.model.GraphStatistics;
 
 public class ArcInspectorFactory {
 
@@ -110,6 +110,65 @@ public class ArcInspectorFactory {
         }
     };
 
+
+    private static class NoFilterByTimeArcInspector implements ArcInspector {
+
+        @Override
+        public boolean isAllowed(Arc arc) {
+            return true;
+        }
+
+        @Override
+        public double getCost(Arc arc) {
+            return arc.getMinimumTravelTime();
+        }
+
+        @Override
+        public int getMaximumSpeed() {
+            return GraphStatistics.NO_MAXIMUM_SPEED;
+        }
+
+        @Override
+        public Mode getMode() {
+            return Mode.TIME;
+        }
+
+        @Override
+        public String toString() {
+            return "Fastest path, all roads allowed";
+        }
+    }
+
+    private static class OnlyPedestrianByLength implements ArcInspector {
+        @Override
+        public boolean isAllowed(Arc arc) {
+            return arc.getRoadInformation().getAccessRestrictions().isAllowedForAny(
+                    AccessMode.FOOT,
+                    EnumSet.complementOf(EnumSet.of(AccessRestriction.FORBIDDEN,
+                            AccessRestriction.PRIVATE)));
+        }
+
+        @Override
+        public double getCost(Arc arc) {
+            return arc.getLength();
+        }
+
+        @Override
+        public int getMaximumSpeed() {
+            return GraphStatistics.NO_MAXIMUM_SPEED;
+        }
+
+        @Override
+        public String toString() {
+            return "Shortest path for pedestrian";
+        }
+
+        @Override
+        public Mode getMode() {
+            return Mode.LENGTH;
+        }
+    };
+
     /**
      * @return List of all arc filters in this factory.
      */
@@ -118,7 +177,7 @@ public class ArcInspectorFactory {
         // to get an understandable output!):
         return Arrays.asList(new NoFilterByLengthArcInspector(),
                 new OnlyCarsByLengthArcInspector(), new OnlyCarsByTimeArcInspector(),
-                new OnlyPedestrianByTime());
+                new OnlyPedestrianByTime(), new OnlyPedestrianByLength(), new NoFilterByTimeArcInspector());
     }
 
 }
